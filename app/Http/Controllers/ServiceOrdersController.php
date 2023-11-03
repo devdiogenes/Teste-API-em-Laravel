@@ -65,30 +65,31 @@ class ServiceOrdersController extends Controller
         ];
 
         $filters = $request->filters;
-
-        if(gettype($filters) != "array"){
-            return ["Error" => "Filters field should be a array"];
-        };
-
-        foreach($filters as $filter){
-            if(gettype($filter) != "array"){
-                return ["Error" => "All filters should have array format"];
-            }
-            $filter_name = $filter[0];
-            if(sizeof($filter) != 3 || !in_array($filter_name, array_keys($allowed_filters))){
-                return ["Error" => "Invalid filter"];
+        if($filters){
+            if(gettype($filters) != "array"){
+                return ["Error" => "Filters field should be a array"];
             };
-            $filter_operator = $filter[1];
-            if(!in_array($filter_operator, $allowed_filters[$filter_name])){
-                return ["Error" => "Invalid operator for ".$filter_name." filter."];
-            }
-            if(in_array($filter_name, ['user_name', 'user_email'])){
-                $filter_name = str_replace("user_", "", $filter_name);
-                $list_query = $list_query->whereHas('user', function (Builder $query) use ($filter_name, $filter_operator, $filter) {
-                    $query->where($filter_name, $filter_operator, $filter[2]);
-                });
-            } else {
-                $list_query = $list_query->where($filter_name, $filter_operator, $filter[2]);
+    
+            foreach($filters as $filter){
+                if(gettype($filter) != "array"){
+                    return ["Error" => "All filters should have array format"];
+                }
+                $filter_name = $filter[0];
+                if(sizeof($filter) != 3 || !in_array($filter_name, array_keys($allowed_filters))){
+                    return ["Error" => "Invalid filter"];
+                };
+                $filter_operator = $filter[1];
+                if(!in_array($filter_operator, $allowed_filters[$filter_name])){
+                    return ["Error" => "Invalid operator for ".$filter_name." filter."];
+                }
+                if(in_array($filter_name, ['user_name', 'user_email'])){
+                    $filter_name = str_replace("user_", "", $filter_name);
+                    $list_query = $list_query->whereHas('user', function (Builder $query) use ($filter_name, $filter_operator, $filter) {
+                        $query->where($filter_name, $filter_operator, $filter[2]);
+                    });
+                } else {
+                    $list_query = $list_query->where($filter_name, $filter_operator, $filter[2]);
+                }
             }
         }
         
