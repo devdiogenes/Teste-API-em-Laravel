@@ -1,4 +1,4 @@
-# Teste PHP JR.
+# Teste API em Laravel
 ## Como acessar a API pela primeira vez
 
  1. Crie um usuário no sistema, utilizando a interface do Laravel
